@@ -20,18 +20,18 @@ async function bootstrap() {
 
   // Cấu hình Swagger OpenAPI UI
   const config = new DocumentBuilder()
-    .setTitle('Football Club Voting API')
+    .setTitle('Football Match Attendance & Voting API')
     .setDescription(
-      'Hệ thống RESTful API cho Câu lạc bộ Bóng đá gồm 2 Collection: Users (Thành viên CLB) và Sessions (Phiên bình chọn). Không yêu cầu token/đăng nhập, giảng viên có thể test trực tiếp bằng nút "Try it out" và "Execute".',
+      'Hệ thống RESTful API cho Đội bóng đá gồm 2 Collection: Users (Danh sách thành viên) và Sessions (Phiên điểm danh bình chọn CÓ THAM GIA ĐÁ BÓNG hay KHÔNG). Không yêu cầu token/đăng nhập, giảng viên có thể test trực tiếp bằng nút "Try it out" và "Execute".',
     )
     .setVersion('1.0')
-    .addTag('Sessions (Phiên bình chọn CLB Bóng đá)', '4 API quản lý phiên bình chọn: xem, tạo, xóa, và vote')
-    .addTag('Users', 'API quản lý danh sách thành viên trong CLB')
+    .addTag('Sessions (Phiên điểm danh đá bóng)', '4 API: xem danh sách, tạo phiên điểm danh, xóa phiên, và vote tham gia/báo vắng')
+    .addTag('Users', 'API quản lý danh sách thành viên trong đội bóng')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
-    customSiteTitle: 'Football Club Voting Swagger Docs',
+    customSiteTitle: 'Football Match Attendance API Docs',
   });
   SwaggerModule.setup('docs', app, document);
 

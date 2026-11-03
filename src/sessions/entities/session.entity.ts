@@ -11,57 +11,66 @@ import { ApiProperty } from '@nestjs/swagger';
 export class Session {
   @ApiProperty({
     example: '550e8400-e29b-41d4-a716-446655440000',
-    description: 'Mã định danh duy nhất của phiên bình chọn (UUID)',
+    description: 'Mã định danh duy nhất của phiên điểm danh (UUID)',
   })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ApiProperty({
-    example: 'Bình chọn Cầu thủ xuất sắc nhất tháng 10',
-    description: 'Tiêu đề của phiên bình chọn',
+    example: 'Điểm danh trận giao hữu tối Thứ 5',
+    description: 'Tiêu đề phiên điểm danh trận bóng',
   })
   @Column()
   title: string;
 
   @ApiProperty({
-    example: 'Hà Nội FC',
-    description: 'Tên câu lạc bộ bóng đá',
+    example: '19:30 - Thứ 5, ngày 05/11/2026',
+    description: 'Thời gian diễn ra trận đấu',
   })
-  @Column({ default: 'FC Football Club' })
-  clubName: string;
+  @Column({ default: '19:00 - Cuối tuần' })
+  matchDate: string;
 
   @ApiProperty({
-    example: 'Bình chọn dành cho các thành viên và cổ động viên xuất sắc trong tháng',
-    description: 'Mô tả chi tiết nội dung phiên bình chọn',
+    example: 'Sân bóng cỏ nhân tạo Chùa Láng',
+    description: 'Địa điểm tổ chức trận đấu',
+  })
+  @Column({ default: 'Sân bóng CLB' })
+  location: string;
+
+  @ApiProperty({
+    example: 'Anh em điểm danh chốt quân số sớm để ban cán sự chuẩn bị áo và nước',
+    description: 'Mô tả chi tiết / Ghi chú cho buổi đá bóng',
+    nullable: true,
   })
   @Column({ nullable: true })
   description: string;
 
   @ApiProperty({
-    example: 'Quang Hải, Văn Quyết, Hùng Dũng',
-    description: 'Danh sách các ứng viên hoặc hạng mục bình chọn',
-  })
-  @Column({ default: 'Cầu thủ A, Cầu thủ B, Cầu thủ C' })
-  candidates: string;
-
-  @ApiProperty({
-    example: 12,
-    description: 'Tổng số lượt bình chọn (votes) hiện tại',
+    example: 10,
+    description: 'Số lượng thành viên bình chọn CÓ THAM GIA',
     default: 0,
   })
   @Column({ default: 0 })
-  voteCount: number;
+  participateCount: number;
+
+  @ApiProperty({
+    example: 2,
+    description: 'Số lượng thành viên bình chọn BÁO VẮNG (không tham gia)',
+    default: 0,
+  })
+  @Column({ default: 0 })
+  absentCount: number;
 
   @ApiProperty({
     example: 'OPEN',
-    description: 'Trạng thái phiên bình chọn (OPEN hoặc CLOSED)',
+    description: 'Trạng thái phiên điểm danh (OPEN hoặc CLOSED)',
     default: 'OPEN',
   })
   @Column({ default: 'OPEN' })
   status: string;
 
   @ApiProperty({
-    description: 'Thời điểm tạo phiên bình chọn',
+    description: 'Thời điểm tạo phiên',
   })
   @CreateDateColumn()
   createdAt: Date;

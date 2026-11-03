@@ -1,21 +1,29 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class VoteSessionDto {
   @ApiPropertyOptional({
-    example: 'Quang Hải',
-    description: 'Tên cầu thủ được bình chọn',
+    example: true,
+    description: 'Bình chọn: true = CÓ THAM GIA ĐÁ BÓNG, false = BÁO VẮNG (Mặc định: true)',
+    default: true,
   })
-  @IsString()
+  @IsBoolean()
   @IsOptional()
-  candidateName?: string;
+  participate?: boolean;
 
   @ApiPropertyOptional({
-    example: 'Cổ động viên #12',
-    description: 'Tên người thực hiện bình chọn (không bắt buộc)',
+    example: 'Nguyễn Văn A',
+    description: 'Tên thành viên tham gia bình chọn (tùy chọn)',
   })
   @IsString()
   @IsOptional()
-  voterName?: string;
-}
+  userName?: string;
 
+  @ApiPropertyOptional({
+    example: 'Có mặt đúng giờ, mang áo số 10',
+    description: 'Ghi chú thêm (ví dụ: xin đến muộn 15 phút)',
+  })
+  @IsString()
+  @IsOptional()
+  note?: string;
+}

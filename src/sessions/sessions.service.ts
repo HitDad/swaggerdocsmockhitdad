@@ -27,10 +27,11 @@ export class SessionsService {
   async create(createSessionDto: CreateSessionDto): Promise<Session> {
     const session = this.sessionRepository.create({
       title: createSessionDto.title,
-      clubName: createSessionDto.clubName || 'CLB Bóng đá',
-      description: createSessionDto.description || '',
-      candidates: createSessionDto.candidates || 'Cầu thủ A, Cầu thủ B',
-      voteCount: 0,
+      matchDate: createSessionDto.matchDate || '19:30 - Thứ 5 hàng tuần',
+      location: createSessionDto.location || 'Sân bóng CLB',
+      description: createSessionDto.description || 'Điểm danh quân số tham gia đá bóng',
+      participateCount: 0,
+      absentCount: 0,
       status: 'OPEN',
     });
     return await this.sessionRepository.save(session);
@@ -40,67 +41,79 @@ export class SessionsService {
   async remove(id: string): Promise<{ message: string; deletedId: string }> {
     const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
-      throw new NotFoundException(`Không tìm thấy phiên bình chọn với ID: ${id}`);
+      throw new NotFoundException(`Không tìm thấy phiên điểm danh với ID: ${id}`);
     }
     await this.sessionRepository.remove(session);
     return {
-      message: 'Xóa phiên bình chọn thành công',
+      message: 'Xóa phiên điểm danh thành công',
       deletedId: id,
     };
   }
 
-  // 4. Vote cho 1 session
+  // 4. Vote cho 1 session (Bình chọn Có tham gia hay Không tham gia đá bóng)
   async vote(id: string, voteSessionDto?: VoteSessionDto): Promise<{
     message: string;
     session: Session;
-    votedCandidate?: string;
+    result: string;
   }> {
     const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
-      throw new NotFoundException(`Không tìm thấy phiên bình chọn với ID: ${id}`);
+      throw new NotFoundException(`Không tìm thấy phiên điểm danh với ID: ${id}`);
     }
 
     if (session.status !== 'OPEN') {
-      throw new BadRequestException('Phiên bình chọn này đã kết thúc, không thể vote nữa');
+      throw new BadRequestException('Phiên điểm danh này đã đóng, không thể bình chọn nữa');
     }
 
-    session.voteCount += 1;
+    const isParticipating = voteSessionDto?.participate !== false; // mặc định là true
+    const memberName = voteSessionDto?.userName || 'Thành viên CLB';
+
+    if (isParticipating) {
+      session.participateCount += 1;
+    } else {
+      session.absentCount += 1;
+    }
+
     const updatedSession = await this.sessionRepository.save(session);
+    const voteChoice = isParticipating ? 'CÓ THAM GIA ĐÁ BÓNG' : 'BÁO VẮNG';
 
     return {
-      message: `Đã bình chọn thành công cho phiên "${session.title}"! Tổng lượt vote hiện tại: ${updatedSession.voteCount}`,
+      message: `${memberName} đã bình chọn [${voteChoice}] cho trận "${session.title}" thành công!`,
       session: updatedSession,
-      votedCandidate: voteSessionDto?.candidateName || 'Ứng viên hợp lệ',
+      result: `Hiện có: ${updatedSession.participateCount} người tham gia | ${updatedSession.absentCount} người báo vắng`,
     };
   }
 
-  // Khởi tạo dữ liệu mẫu cho CLB bóng đá
+  // Khởi tạo sẵn các phiên điểm danh trận đấu mẫu
   async seedDefaultData() {
     const count = await this.sessionRepository.count();
     if (count === 0) {
       const demoSessions = [
         {
-          title: 'Bình chọn Cầu thủ xuất sắc nhất tháng 10',
-          clubName: 'Hà Nội FC',
-          description: 'Bình chọn dành cho các thành viên và cổ động viên cho danh hiệu cầu thủ xuất sắc nhất.',
-          candidates: 'Nguyễn Quang Hải, Nguyễn Văn Quyết, Đỗ Hùng Dũng',
-          voteCount: 15,
+          title: 'Điểm danh trận giao hữu tối Thứ 5 tuần này',
+          matchDate: '19:30 - Thứ 5, 05/11/2026',
+          location: 'Sân bóng cỏ nhân tạo Chùa Láng (Sân số 2)',
+          description: 'Trận gặp FC Bạn Hữu. Anh em điểm danh trước 12h trưa để ban cán sự chuẩn bị nước và áo.',
+          participateCount: 11,
+          absentCount: 2,
           status: 'OPEN',
         },
         {
-          title: 'Bình chọn Bàn thắng đẹp nhất vòng đấu',
-          clubName: 'Hà Nội FC',
-          description: 'Bàn thắng sút xa từ ngoài vòng cấm hay pha phối hợp đồng đội ăn ý?',
-          candidates: 'Bàn thắng phút 34 (Quang Hải), Bàn thắng phút 78 (Văn Quyết)',
-          voteCount: 8,
+          title: 'Điểm danh trận đấu giải Ngoại hạng Phủi Chủ Nhật',
+          matchDate: '16:00 - Chủ Nhật, 08/11/2026',
+          location: 'Sân vận động C500 - Học viện An Ninh',
+          description: 'Trận đấu vòng bảng tranh cúp Tứ Hùng. Yêu cầu toàn đội có mặt sớm 30 phút khởi động.',
+          participateCount: 14,
+          absentCount: 1,
           status: 'OPEN',
         },
         {
-          title: 'Bình chọn Đội hình ra sân trận Derby sắp tới',
-          clubName: 'Hà Nội FC',
-          description: 'Ý kiến CĐV về sơ đồ chiến thuật 4-3-3 hay 3-5-2',
-          candidates: 'Sơ đồ 4-3-3 tấn công, Sơ đồ 3-5-2 kiểm soát bóng',
-          voteCount: 22,
+          title: 'Điểm danh buổi tập thể lực & chiến thuật thứ 3',
+          matchDate: '18:00 - Thứ 3, 10/11/2026',
+          location: 'Sân bóng Đại học Y Hà Nội',
+          description: 'Tập các bài phối hợp nhóm nhỏ và đá đối kháng nội bộ.',
+          participateCount: 9,
+          absentCount: 4,
           status: 'OPEN',
         },
       ];
