@@ -7,6 +7,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,7 +24,9 @@ import { Session } from './entities/session.entity';
 @ApiTags('Sessions (Phiên điểm danh đá bóng)')
 @Controller('sessions')
 export class SessionsController {
-  constructor(private readonly sessionsService: SessionsService) {}
+  constructor(
+    @Inject(SessionsService) private readonly sessionsService: SessionsService,
+  ) {}
 
   // 1. Xem danh sách session
   @Get()
