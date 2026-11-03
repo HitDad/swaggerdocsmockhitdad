@@ -20,21 +20,21 @@ export class User {
     example: 'nguyen_van_a',
     description: 'Tên tài khoản / Mã thành viên CLB',
   })
-  @Column({ unique: true })
+  @Column({ unique: true, type: 'varchar' })
   username: string;
 
   @ApiProperty({
     example: 'Nguyễn Văn A',
     description: 'Họ và tên thành viên',
   })
-  @Column()
+  @Column({ type: 'varchar' })
   fullName: string;
 
   @ApiProperty({
     example: 'member@fc-club.com',
     description: 'Email liên hệ của thành viên',
   })
-  @Column({ unique: true })
+  @Column({ unique: true, type: 'varchar' })
   email: string;
 
   @ApiProperty({
@@ -42,7 +42,7 @@ export class User {
     description: 'Vị trí hoặc vai trò trong CLB (Tiền đạo, Tiền vệ, Hậu vệ, CĐV...)',
     default: 'Thành viên',
   })
-  @Column({ default: 'Thành viên' })
+  @Column({ default: 'Thành viên', type: 'varchar' })
   role: string;
 
   @ApiProperty({

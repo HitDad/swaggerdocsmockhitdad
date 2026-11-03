@@ -13,7 +13,7 @@ import { SessionsService } from './sessions/sessions.service';
   imports: [
     TypeOrmModule.forRoot({
       type: 'better-sqlite3',
-      database: 'database.sqlite',
+      database: process.env.VERCEL ? '/tmp/database.sqlite' : 'database.sqlite',
       entities: [User, Session],
       synchronize: true,
     }),
