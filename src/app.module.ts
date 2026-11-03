@@ -12,8 +12,9 @@ import { SessionsService } from './sessions/sessions.service';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'better-sqlite3',
-      database: process.env.VERCEL ? '/tmp/database.sqlite' : 'database.sqlite',
+      type: 'sqljs',
+      autoSave: true,
+      location: process.env.VERCEL ? '/tmp/database.sqlite' : 'database.sqlite',
       entities: [User, Session],
       synchronize: true,
     }),
